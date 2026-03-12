@@ -43,6 +43,7 @@
     initResumeDownload()
     initKonamiCode()
     initProjectGlow()
+    initSparkleTrail()
   }
 
   /* -----------------------------------------------------------------------
@@ -219,7 +220,7 @@
       draw() {
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(124, 58, 237, ${this.opacity})`
+        ctx.fillStyle = `rgba(255, 107, 157, ${this.opacity})`
         ctx.fill()
       }
     }
@@ -238,7 +239,7 @@
           if (dist < 150) {
             const opacity = (1 - dist / 150) * 0.15
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(99, 102, 241, ${opacity})`
+            ctx.strokeStyle = `rgba(196, 77, 255, ${opacity})`
             ctx.lineWidth = 0.5
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
@@ -480,15 +481,19 @@
 
     // Check saved preference
     const saved = localStorage.getItem('theme')
-    if (saved === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light')
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark')
     }
 
     toggle.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme')
-      const next = current === 'light' ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', next)
-      localStorage.setItem('theme', next)
+      const next = current === 'dark' ? '' : 'dark'
+      if (next) {
+        document.documentElement.setAttribute('data-theme', 'dark')
+      } else {
+        document.documentElement.removeAttribute('data-theme')
+      }
+      localStorage.setItem('theme', next || 'light')
     })
   }
 
@@ -573,7 +578,7 @@
 
     function triggerEasterEgg() {
       // Confetti-like particle burst
-      const colors = ['#7c3aed', '#6366f1', '#06b6d4', '#8b5cf6', '#10b981']
+      const colors = ['#FF6B9D', '#C44DFF', '#FFB6D9', '#B983FF', '#F472B6']
       for (let i = 0; i < 60; i++) {
         const confetti = document.createElement('div')
         confetti.style.cssText = `
@@ -622,6 +627,30 @@
         card.style.setProperty('--mouse-x', x + 'px')
         card.style.setProperty('--mouse-y', y + 'px')
       })
+    })
+  }
+
+  /* -----------------------------------------------------------------------
+     21. SPARKLE TRAIL ON HERO MOUSEMOVE
+     ----------------------------------------------------------------------- */
+  function initSparkleTrail() {
+    const hero = document.getElementById('hero')
+    if (!hero || window.matchMedia('(pointer: coarse)').matches) return
+
+    const symbols = ['\u2726', '\u2727', '\u22C6', '\u2661', '\u2605']
+    const colors = ['#FF6B9D', '#C44DFF', '#FFB6D9', '#B983FF']
+
+    hero.addEventListener('mousemove', (e) => {
+      if (Math.random() > 0.3) return
+      const sparkle = document.createElement('span')
+      sparkle.className = 'mouse-sparkle'
+      sparkle.textContent = symbols[Math.floor(Math.random() * symbols.length)]
+      sparkle.style.left = e.clientX + 'px'
+      sparkle.style.top = e.clientY + 'px'
+      sparkle.style.color = colors[Math.floor(Math.random() * colors.length)]
+      sparkle.style.fontSize = (Math.random() * 0.8 + 0.6) + 'rem'
+      document.body.appendChild(sparkle)
+      setTimeout(() => sparkle.remove(), 1000)
     })
   }
 
